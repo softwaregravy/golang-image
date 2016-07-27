@@ -32,54 +32,9 @@ go.test ?= $(GO) test $(go.test.args)
 go.bench ?= $(GO) test -run=_ -bench . $(go.bench.args)
 go.build ?= $(GO) build $(go.build.args)
 
-# Gets the docker credentials from the environment.
-docker.email ?= $(DOCKER_EMAIL)
-docker.user ?= $(DOCKER_USER)
-docker.pass ?= $(DOCKER_PASS)
-
-# We only configure the docker environment if there's a Dockerfile in the
-# repository.
-ifneq ($(wildcard Dockerfile),)
-# When no docker.tags variable is set we attempt to guess what the tags should
-# be based on the values of a couple of environment variables.
-ifeq ($(docker.tags),)
-	ifeq ($(CIRCLE_BRANCH),master)
-		docker.version ?= master
-	endif
-	ifneq ($(CIRCLE_TAG),)
-		docker.version ?= latest
-		docker.tags += $(CIRCLE_TAG)
-	endif
-	ifneq ($(CIRCLE_BUILD_NUM),)
-		docker.tags += circle-$(CIRCLE_BUILD_NUM)
-	endif
-	ifneq ($(CIRCLE_SHA1),)
-		docker.tags += git-$(CIRCLE_SHA1)
-	endif
-endif
-endif
-
-# If a docker image version was set but no docker image was named, use the name
-# of the current directory as the image name.
-ifneq ($(docker.version),)
-	docker.image ?= segment/$(notdir $(shell pwd))
-endif
-
-# Set docker login options.
-docker.login.args :=
-ifneq ($(docker.user),)
-	docker.login.args += -u $(docker.user)
-endif
-ifneq ($(docker.pass),)
-	docker.login.args += -p $(docker.pass)
-endif
-ifneq ($(docker.email),)
-	docker.login.args += -e $(docker.email)
-endif
-
 # The `all` target defines the list of targets that are executed by default.
 # The default behavior is to run all high-level build targets.
-all: info env vet get test bench build publish
+all: info env vet get test bench build
 
 env:
 	@$(call do,$(go.env))
@@ -97,17 +52,6 @@ info:
 	@$(call printv,go.test,$(go.test))
 	@$(call printv,go.bench,$(go.bench))
 	@$(call printv,go.build,$(go.build))
-ifneq ($(docker.image),)
-	@$(call printv,docker.image,$(docker.image))
-	@$(call printv,docker.version,$(docker.version))
-	@$(call printv,docker.tags,$(docker.tags))
-	@$(call printv,docker.user,$(docker.user))
-	@$(call printv,docker.email,$(docker.email))
-	@$(call printv,docker.client.version,$(shell docker version --format '{{.Client.Version}}'))
-	@$(call printv,docker.client.api,$(shell docker version --format '{{.Client.APIVersion}}'))
-	@$(call printv,docker.server.version,$(shell docker version --format '{{.Server.Version}}'))
-	@$(call printv,docker.server.api,$(shell docker version --format '{{.Server.APIVersion}}'))
-endif
 
 vet:
 	@$(call do,$(go.vet))
@@ -135,40 +79,6 @@ endif
 docker.compose:
 	@$(call do,docker-compose up -d)
 
-# If no docker image is set we assume there is no image to release, define the
-# `publish` target as doing nothing.
-ifeq ($(docker.image),)
-publish:
-	@true
-else
-publish: docker.publish
-endif
-
-# If docker.user was set we assume we have to run docker login.
-ifeq ($(docker.user),)
-docker.login:
-	@true
-else
-docker.login:
-	@$(call print,docker login [docker credentials])
-	@docker login $(docker.login.args)
-endif
-
-docker.build: docker.login
-	@$(call do,docker build -t $(docker.image):$(docker.version) .)
-	@$(foreach tag,$(docker.tags),\
-		$(call do,docker tag $(docker.image):$(docker.version) $(docker.image):$(tag);))
-
-# Only push the docker images if we're in CI environment, this is a safety net
-# to avoid publishing images by mistake when they are built locally.
-ifeq ($(CI),true)
-docker.publish: docker.build
-	@$(call do,docker push $(docker.image))
-else
-docker.publish:
-	@true
-endif
-
 git.submodules:
 	@$(call do,git submodule update --init --recursive)
 
@@ -183,8 +93,5 @@ git.submodules:
 	build \
 	publish \
 	setup \
-	docker.login \
 	docker.compose \
-	docker.build \
-	docker.publish \
 	git.submodules

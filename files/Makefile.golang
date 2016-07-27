@@ -17,7 +17,7 @@ go.packages ?= . $(shell ls -d */ 2> /dev/null | grep -v vendor | sed s/^/.\\//g
 # The options to each of the go comands, set to useful defaults but they can be
 # overwritten if necessary.
 go.env.args ?=
-go.vet.args ?= -composites=false $(shell go vet -n $(go.packages) | cut -d' ' -f2- | tr " " "\n" | uniq)
+go.vet.args ?= $(go.packages)
 go.get.args ?= -t -d -v $(go.packages)
 go.test.args ?= -v -race $(go.packages)
 go.bench.args ?= -v $(go.packages)
@@ -27,7 +27,7 @@ go.build.args ?= .
 # overwritten if necessary.
 go.env ?= $(GO) env $(go.env.args)
 go.get ?= $(GO) get $(go.get.args)
-go.vet ?= $(GO) tool vet $(go.vet.args)
+go.vet ?= $(GO) vet $(go.vet.args)
 go.test ?= $(GO) test $(go.test.args)
 go.bench ?= $(GO) test -run=_ -bench . $(go.bench.args)
 go.build ?= $(GO) build $(go.build.args)
@@ -54,7 +54,7 @@ info:
 	@$(call printv,go.build,$(go.build))
 
 vet:
-	@$(call do,$(go.vet))
+	-@$(call do,$(go.vet))
 
 get: git.submodules
 	@$(call do,$(go.get))

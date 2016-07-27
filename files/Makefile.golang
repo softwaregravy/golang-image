@@ -27,7 +27,7 @@ go.build.args ?= .
 # overwritten if necessary.
 go.env ?= $(GO) env $(go.env.args)
 go.get ?= $(GO) get $(go.get.args)
-go.vet ?= $(GO) vet $(go.vet.args)
+go.vet ?= $(GO) tool vet $(go.vet.args)
 go.test ?= $(GO) test $(go.test.args)
 go.bench ?= $(GO) test -run=_ -bench . $(go.bench.args)
 go.build ?= $(GO) build $(go.build.args)

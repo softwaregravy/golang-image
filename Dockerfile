@@ -9,9 +9,6 @@ RUN curl -s -L https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz > 
 RUN mkdir /go
 ENV GOROOT=/usr/local/go GOPATH=/go PATH=$PATH:/usr/local/go/bin
 
-# make the GOPATH persistent
-VOLUME ["/go"]
-
 # configure the container's entry point
 COPY files/Makefile.golang /usr/src/Makefile.golang
 ENTRYPOINT ["make", "-f", "/usr/src/Makefile.golang"]

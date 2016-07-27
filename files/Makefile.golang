@@ -17,7 +17,7 @@ go.packages ?= . $(shell ls -d */ 2> /dev/null | grep -v vendor | sed s/^/.\\//g
 # The options to each of the go comands, set to useful defaults but they can be
 # overwritten if necessary.
 go.env.args ?=
-go.vet.args ?= $(go.packages)
+go.vet.args ?= -composites=false $(go.packages)
 go.get.args ?= -t -d -v $(go.packages)
 go.test.args ?= -v -race $(go.packages)
 go.bench.args ?= -v $(go.packages)

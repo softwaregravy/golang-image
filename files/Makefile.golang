@@ -54,7 +54,7 @@ info:
 	@$(call printv,go.build,$(go.build))
 
 vet:
-	@$(call do,$(go.vet))
+	-@$(call do,$(go.vet))
 
 get: git.submodules
 	@$(call do,$(go.get))

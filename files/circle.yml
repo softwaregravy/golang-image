@@ -15,7 +15,7 @@ test:
       --tty
       --interactive
       --name go
-      --net=host
+      --net host
       --volume /var/run/docker.sock:/run/docker.sock
       --volume ${GOPATH%%:*}/src:/go/src
       --volume ${PWD}:/go/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}

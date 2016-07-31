@@ -1,4 +1,4 @@
-# The base Makefile sets a bunch of useful defaults.
+x# The base Makefile sets a bunch of useful defaults.
 include /usr/src/Makefile.docker
 
 # The go compiler.
@@ -56,7 +56,7 @@ info:
 vet:
 	-@$(call do,$(go.vet))
 
-get: git.submodules
+get: govendor.sync
 	@$(call do,$(go.get))
 
 test: get test.setup
@@ -87,6 +87,9 @@ docker.compose.up:
 docker.compose.down:
 	@$(call do,docker-compose down)
 
+govendor.sync: git.submodules
+	@$(call do,govendor -v sync)
+
 git.submodules:
 	@$(call do,git submodule update --init --recursive)
 
@@ -104,4 +107,5 @@ git.submodules:
 	test.teardown \
 	docker.compose.up \
 	docker.compose.down \
+	govendor.sync \
 	git.submodules

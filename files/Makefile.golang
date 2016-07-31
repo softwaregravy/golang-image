@@ -1,4 +1,4 @@
-x# The base Makefile sets a bunch of useful defaults.
+# The base Makefile sets a bunch of useful defaults.
 include /usr/src/Makefile.docker
 
 # The go compiler.

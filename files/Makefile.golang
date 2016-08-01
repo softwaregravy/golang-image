@@ -1,17 +1,12 @@
 # The base Makefile sets a bunch of useful defaults.
 include /usr/src/Makefile.docker
 
-# The binaries used in this makefile.
-GIT ?= git
-GO ?= go
-GOVENDOR ?= govendor
-
 # Build environment.
 CI ?= false
 CIRCLECI ?= false
 
 # The runtime information.
-info.version := $(shell $(GO) version | sed 's/^go version //g')
+info.version := $(shell go version | sed 's/^go version //g')
 
 # The options to each of the go comands, set to useful defaults but they can be
 # overwritten if necessary.
@@ -24,12 +19,12 @@ go.build.args ?= .
 
 # The default values for each go command used by this makefile, they can be
 # overwritten if necessary.
-go.env ?= $(GO) env $(go.env.args)
-go.get ?= $(GO) get $(go.get.args)
-go.vet ?= $(GOVENDOR) vet +local $(go.vet.args)
-go.test ?= $(GOVENDOR) test +local $(go.test.args)
-go.bench ?= $(GOVENDOR) test +local -run=_ -bench . $(go.bench.args)
-go.build ?= $(GO) build $(go.build.args)
+go.env ?= go env $(go.env.args)
+go.get ?= go get $(go.get.args)
+go.vet ?= govendor vet +local $(go.vet.args)
+go.test ?= govendor test +local $(go.test.args)
+go.bench ?= govendor test +local -run=_ -bench . $(go.bench.args)
+go.build ?= go build $(go.build.args)
 
 # The `all` target defines the list of targets that are executed by default.
 # The default behavior is to run all high-level build targets.
@@ -53,8 +48,8 @@ info:
 	@$(call printv,go.build,$(go.build))
 
 get:
-	@$(call do,$(GIT) submodule update --init --recursive)
-	@$(call do,$(GOVENDOR) sync)
+	@$(call do,git submodule update --init --recursive)
+	@$(call do,govendor sync)
 	@$(call do,$(go.get))
 
 vet:

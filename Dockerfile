@@ -2,7 +2,7 @@
 FROM segment/docker:latest
 
 # configure the go environment
-ENV GOROOT=/usr/local/go GOPATH=/go PATH=$PATH:/usr/local/go/bin
+ENV GOROOT=/usr/local/go GOPATH=/go PATH=$PATH:/go/bin:/usr/local/go/bin
 
 # install go, govendor
 RUN curl -s -L https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz > /tmp/go.tar.gz && \

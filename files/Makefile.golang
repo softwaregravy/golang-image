@@ -1,8 +1,10 @@
 # The base Makefile sets a bunch of useful defaults.
 include /usr/src/Makefile.docker
 
-# The go compiler.
+# The binaries used in this makefile.
+GIT ?= git
 GO ?= go
+GOVENDOR ?= govendor
 
 # Build environment.
 CI ?= false
@@ -11,14 +13,11 @@ CIRCLECI ?= false
 # The runtime information.
 info.version := $(shell $(GO) version | sed 's/^go version //g')
 
-# The list of go packages to run the commands against.
-go.packages ?= . $(shell ls -d */ 2> /dev/null | grep -v vendor | sed s/^/.\\//g | sed s/$$/.../g)
-
 # The options to each of the go comands, set to useful defaults but they can be
 # overwritten if necessary.
 go.env.args ?=
-go.vet.args ?= $(go.packages)
 go.get.args ?= -t -d -v $(go.packages)
+go.vet.args ?= $(go.packages)
 go.test.args ?= -v -race $(go.packages)
 go.bench.args ?= -v $(go.packages)
 go.build.args ?= .
@@ -27,14 +26,14 @@ go.build.args ?= .
 # overwritten if necessary.
 go.env ?= $(GO) env $(go.env.args)
 go.get ?= $(GO) get $(go.get.args)
-go.vet ?= $(GO) vet $(go.vet.args)
-go.test ?= $(GO) test $(go.test.args)
-go.bench ?= $(GO) test -run=_ -bench . $(go.bench.args)
+go.vet ?= $(GOVENDOR) vet +local $(go.vet.args)
+go.test ?= $(GOVENDOR) test +local $(go.test.args)
+go.bench ?= $(GOVENDOR) test +local -run=_ -bench . $(go.bench.args)
 go.build ?= $(GO) build $(go.build.args)
 
 # The `all` target defines the list of targets that are executed by default.
 # The default behavior is to run all high-level build targets.
-all: info env vet get test bench build
+all: info env get vet test bench build
 
 env:
 	@$(call do,$(go.env))
@@ -53,11 +52,13 @@ info:
 	@$(call printv,go.bench,$(go.bench))
 	@$(call printv,go.build,$(go.build))
 
+get:
+	@$(call do,$(GIT) submodule update --init --recursive)
+	@$(call do,$(GOVENDOR) sync)
+	@$(call do,$(go.get))
+
 vet:
 	-@$(call do,$(go.vet))
-
-get: govendor.sync
-	@$(call do,$(go.get))
 
 test: get test.setup
 	@function teardown { $(MAKE) -f /usr/src/Makefile.golang --no-print-directory test.teardown; }; \
@@ -87,12 +88,6 @@ docker.compose.up:
 docker.compose.down:
 	@$(call do,docker-compose down)
 
-govendor.sync: git.submodules
-	@$(call do,govendor -v sync)
-
-git.submodules:
-	@$(call do,git submodule update --init --recursive)
-
 .PHONY: \
 	all \
 	env \
@@ -106,6 +101,4 @@ git.submodules:
 	test.setup \
 	test.teardown \
 	docker.compose.up \
-	docker.compose.down \
-	govendor.sync \
-	git.submodules
+	docker.compose.down

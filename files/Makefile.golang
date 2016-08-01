@@ -1,4 +1,11 @@
-# The base Makefile sets a bunch of useful defaults.
+# The base Makefile sets a bunch of useful defaults, provides:
+#
+# - info.platform
+# - info.location
+# - do
+# - print
+# - printv
+#
 include /usr/src/Makefile.docker
 
 # Build environment.
@@ -11,20 +18,20 @@ info.version := $(shell go version | sed 's/^go version //g')
 # The options to each of the go comands, set to useful defaults but they can be
 # overwritten if necessary.
 go.env.args ?=
-go.get.args ?= -t -d -v $(go.packages)
-go.vet.args ?= $(go.packages)
-go.test.args ?= -v -race $(go.packages)
-go.bench.args ?= -v $(go.packages)
-go.build.args ?= .
+go.get.args ?= -t -d -v
+go.vet.args ?=
+go.test.args ?= -v -race
+go.bench.args ?= -v
+go.build.args ?=
 
 # The default values for each go command used by this makefile, they can be
 # overwritten if necessary.
 go.env ?= go env $(go.env.args)
-go.get ?= go get $(go.get.args)
-go.vet ?= govendor vet +local $(go.vet.args)
-go.test ?= govendor test +local $(go.test.args)
-go.bench ?= govendor test +local -run=_ -bench . $(go.bench.args)
-go.build ?= go build $(go.build.args)
+go.get ?= go get $(go.get.args) ./...
+go.vet ?= govendor vet $(go.vet.args) +local
+go.test ?= govendor test $(go.test.args) +local
+go.bench ?= govendor test -run=_ -bench . $(go.bench.args) +local
+go.build ?= go build $(go.build.args) .
 
 # The `all` target defines the list of targets that are executed by default.
 # The default behavior is to run all high-level build targets.

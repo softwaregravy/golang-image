@@ -89,6 +89,7 @@ docker.compose.down:
 
 govendor.sync: git.submodules
 	@$(call do,govendor -v sync)
+	@$(call do,govendor remove $$(pwd | sed "s~$GOPATH/src/~~"))
 
 git.submodules:
 	@$(call do,git submodule update --init --recursive)

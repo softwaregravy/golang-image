@@ -54,9 +54,7 @@ info:
 	@$(call printv,go.bench,$(go.bench))
 	@$(call printv,go.build,$(go.build))
 
-get:
-	@$(call do,git submodule update --init --recursive)
-	@$(call do,govendor sync)
+get: git.submodule.update govendor.sync
 	@$(call do,$(go.get))
 
 vet:
@@ -90,6 +88,26 @@ docker.compose.up:
 docker.compose.down:
 	@$(call do,docker-compose down)
 
+# When a .gitmodules file exists we pull all git submodules recursively to make
+# sure we have all the dependencies we need to run tests and build.
+ifeq ($(wildcard .gitmodules),)
+git.submodule.update:
+	@true
+else
+git.submodule.update:
+	@$(call do,git submodule update --init --recursive)
+endif
+
+# When a vendor/vendor.json file exists we run `govendor sync` to make sure we
+# have all the dependencies we need to run tests and build.
+ifeq ($(wildcard vendor/vendor.json),)
+govendor.sync:
+	@true
+else
+govendor.sync:
+	@$(call do,govendor sync)
+endif
+
 .PHONY: \
 	all \
 	env \
@@ -103,4 +121,6 @@ docker.compose.down:
 	test.setup \
 	test.teardown \
 	docker.compose.up \
-	docker.compose.down
+	docker.compose.down \
+	git.submodule.update \
+	govendor.sync

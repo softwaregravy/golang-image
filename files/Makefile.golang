@@ -82,7 +82,12 @@ test.setup: docker.compose.up
 test.teardown: docker.compose.down
 endif
 
-docker.compose.up:
+# The default target does nothing but can be overridden if this Makefile is
+# included by other images that are based off of this one.
+docker.login:
+	@true
+
+docker.compose.up: docker.login
 	@$(call do,docker-compose up -d)
 
 docker.compose.down:

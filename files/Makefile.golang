@@ -20,7 +20,7 @@ info.version := $(shell go version | sed 's/^go version //g')
 go.env.args ?=
 go.get.args ?= -t -d -v
 go.vet.args ?=
-go.test.args ?= -v -race
+go.test.args ?= -v -cover -race
 go.bench.args ?= -v
 go.build.args ?=
 

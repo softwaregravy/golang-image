@@ -32,6 +32,7 @@ go.vet ?= govendor vet $(go.vet.args) +local
 go.test ?= govendor test $(go.test.args) +local
 go.bench ?= govendor test -run=_ -bench . $(go.bench.args) +local
 go.build ?= go build $(go.build.args) .
+gv.sync ?= govendor sync
 
 # The `all` target defines the list of targets that are executed by default.
 # The default behavior is to run all high-level build targets.
@@ -110,7 +111,7 @@ govendor.sync:
 	@true
 else
 govendor.sync:
-	@$(call do,govendor sync)
+	@$(call do,$(gv.sync))
 endif
 
 .PHONY: \

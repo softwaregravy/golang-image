@@ -23,6 +23,7 @@ go.vet.args ?=
 go.test.args ?= -v -cover -race
 go.bench.args ?= -v
 go.build.args ?=
+go.build.target ?= .
 
 # The default values for each go command used by this makefile, they can be
 # overwritten if necessary.
@@ -31,7 +32,7 @@ go.get ?= go get $(go.get.args) ./...
 go.vet ?= govendor vet $(go.vet.args) +local
 go.test ?= govendor test $(go.test.args) +local
 go.bench ?= govendor test -run=_ -bench . $(go.bench.args) +local
-go.build ?= go build $(go.build.args) .
+go.build ?= go build $(go.build.args) $(go.build.target)
 gv.sync ?= govendor sync
 
 # The `all` target defines the list of targets that are executed by default.

@@ -67,7 +67,9 @@ test: get test.setup
 	trap teardown EXIT; \
 	$(call do,$(go.test))
 
-bench: get
+bench: get test.setup
+	@function teardown { $(MAKE) -f /usr/src/Makefile.golang --no-print-directory test.teardown; }; \
+	trap teardown EXIT; \
 	@$(call do,$(go.bench))
 
 build: get

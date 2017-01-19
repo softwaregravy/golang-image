@@ -62,12 +62,14 @@ get: git.submodule.update govendor.sync
 vet:
 	-@$(call do,$(go.vet))
 
-test: get test.setup
+test: get
+	@$(MAKE) -f /usr/src/Makefile.golang --no-print-directory test.setup
 	@function teardown { $(MAKE) -f /usr/src/Makefile.golang --no-print-directory test.teardown; }; \
 	trap teardown EXIT; \
 	$(call do,$(go.test))
 
-bench: get test.setup
+bench: get
+	@$(MAKE) -f /usr/src/Makefile.golang --no-print-directory test.setup
 	@function teardown { $(MAKE) -f /usr/src/Makefile.golang --no-print-directory test.teardown; }; \
 	trap teardown EXIT; \
 	@$(call do,$(go.bench))
@@ -95,7 +97,7 @@ docker.compose.up: docker.login
 	@$(call do,docker-compose up -d)
 
 docker.compose.down:
-	@$(call do,docker-compose down)
+	@$(call do,docker-compose down --remove-orphans)
 
 # When a .gitmodules file exists we pull all git submodules recursively to make
 # sure we have all the dependencies we need to run tests and build.

@@ -12,6 +12,8 @@ RUN curl -s -L https://storage.googleapis.com/golang/go1.7.3.linux-amd64.tar.gz 
     mkdir /go && \
     go get github.com/kardianos/govendor
 
+RUN apt-get install bzr
+
 # configure the container's entry point
 COPY files/Makefile.golang /usr/src/Makefile.golang
 ENTRYPOINT ["make", "-f", "/usr/src/Makefile.golang"]

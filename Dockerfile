@@ -5,7 +5,7 @@ FROM segment/docker:latest
 ENV GOROOT=/usr/local/go GOPATH=/go PATH=$PATH:/go/bin:/usr/local/go/bin
 
 # install go, govendor
-RUN curl -s -L https://storage.googleapis.com/golang/go1.7.5.linux-amd64.tar.gz > /tmp/go.tar.gz && \
+RUN curl -s -L https://storage.googleapis.com/golang/go1.8.1.linux-amd64.tar.gz > /tmp/go.tar.gz && \
     cd /usr/local && \
     tar -xzf /tmp/go.tar.gz && \
     rm -f /tmp/go.tar.gz && \

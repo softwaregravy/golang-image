@@ -31,7 +31,7 @@ go.env ?= go env $(go.env.args)
 go.get ?= go get $(go.get.args) ./...
 go.vet ?= govendor vet $(go.vet.args) +local
 go.test ?= govendor test $(go.test.args) +local
-go.bench ?= govendor test -run=_ -bench . $(go.bench.args) +local
+go.bench ?= govendor test -run=_ -bench . $(go.bench.args) -benchmem +local
 go.build ?= go build $(go.build.args) $(go.build.target)
 gv.sync ?= govendor sync
 
